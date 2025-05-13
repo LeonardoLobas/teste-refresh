@@ -1,6 +1,6 @@
 "use client";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postLoginForm } from "@/request/loginPost";
 
@@ -15,6 +15,7 @@ export type createLoginFormData = z.infer<typeof createLoginFormSchema>;
 export default function Home() {
     const {
         register,
+        control,
         handleSubmit,
         formState: { errors },
     } = useForm<createLoginFormData>({
@@ -29,14 +30,18 @@ export default function Home() {
 
     return (
         <div className="grid  items-center justify-items-center bg-green-700 min-h-screen  ">
-            <form
-                onSubmit={handleSubmit(handleLogin, console.log)}
-                className="grid"
-            >
+            <form onSubmit={handleSubmit(handleLogin)} className="grid">
                 <label htmlFor="user">user</label>
-                <input
-                    {...register("user")}
+                {/* <input
+                    //{...register("user")}
                     className="bg-amber-50 border-2 border-amber-300"
+                /> */}
+                <Controller
+                    control={control}
+                    name="user"
+                    render={({ field: { onChange, value } }) => (
+                        <input onChange={onChange} value={value} />
+                    )}
                 />
                 {errors.user && <span>{errors.user.message}</span>}
                 <label htmlFor="senha">Senha</label>
