@@ -2,9 +2,9 @@
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { postLoginForm } from "@/request/loginPost";
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { postLoginForm } from "@/request/loginPost";
 
 const createLoginFormSchema = z.object({
     user: z.string().min(1, "user é obrigatorio"),

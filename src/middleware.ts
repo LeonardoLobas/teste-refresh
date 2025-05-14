@@ -1,14 +1,22 @@
+// middleware.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get("access_token")?.value;
+    const accessToken = request.cookies.get("access_token")?.value;
+    const refreshToken = request.cookies.get("refresh_token")?.value;
 
     const protectedRoutes = ["/homePage"];
 
-    if (protectedRoutes.includes(request.nextUrl.pathname) && !token) {
+    const isProtected = protectedRoutes.includes(request.nextUrl.pathname);
+
+    if (isProtected && !accessToken && !refreshToken) {
         return NextResponse.redirect(new URL("/loginPage", request.url));
     }
+
+    // Se tiver pelo menos um dos dois, permite continuar.
     return NextResponse.next();
 }
 
-export const config = { matcher: ["/homePage"] };
+export const config = {
+    matcher: ["/homePage"],
+};
