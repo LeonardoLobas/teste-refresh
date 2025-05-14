@@ -37,7 +37,7 @@ export default function Home() {
             }
 
             if (response) {
-                router.push("/home");
+                router.push("/homePage");
             }
             console.log(response);
         },
