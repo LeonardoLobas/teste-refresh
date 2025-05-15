@@ -13,9 +13,9 @@ const Page = () => {
 
             console.log("response", response);
             setActivities(response as IActivityGet[]);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.log(error);
-            if (error.message === "REFRESH_ERROR") {
+            if (error instanceof Error && error.message === "REFRESH_ERROR") {
                 navigate.push("/loginPage");
             }
 
