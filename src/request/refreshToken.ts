@@ -1,62 +1,24 @@
 import { axiosInstance } from "@/api";
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-export async function refreshAccessToken(): Promise<string | null> {
+export async function tryRefreshToken(requestUrl: string) {
     try {
-        const refresh_token = (await cookies()).get("refresh_token");
-        if (!refresh_token) {
-            return null;
-        }
+        const response = await axiosInstance.post("/auth/refresh");
 
-        const response = await axiosInstance.post<{ access_token: string }>(
-            "/auth/refresh",
-            { refresh_token }
-        );
+        const newAccessToken = response.data.accessToken;
 
-        const cookiesStore = cookies();
-        (await cookiesStore).set("access_token", response.data.access_token, {
-            secure: true,
+        // Define o novo cookie de access_token
+        const responseToReturn = NextResponse.next();
+        responseToReturn.cookies.set("access_token", newAccessToken, {
             httpOnly: true,
-            sameSite: "strict",
+            path: "/",
+            maxAge: 60 * 15, // 15 minutos
         });
 
-        return response.data.access_token;
-    } catch (error) {
-        console.error("Refresh token failed:", error);
-        return null;
+        return responseToReturn;
+    } catch (err) {
+        console.log(err);
+        // Se falhar, redireciona para login
+        return NextResponse.redirect(new URL("/loginPage", requestUrl));
     }
 }
-axiosInstance.interceptors.request.use(
-    async (config) => {
-        const access_token = (await cookies()).get("access_token");
-
-        if (access_token) {
-            config.headers.Authorization = `Bearer ${access_token}`;
-        }
-
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
-
-axiosInstance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-
-            const newAccessToken = await refreshAccessToken();
-            if (newAccessToken) {
-                originalRequest.headers["Authorization"] =
-                    `Bearer ${newAccessToken}`;
-                return axiosInstance(originalRequest);
-            }
-        }
-
-        return Promise.reject(error);
-    }
-);

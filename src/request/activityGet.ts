@@ -6,14 +6,13 @@ export interface IActivityGet {
     name: string;
 }
 
-export async function activityGet(): Promise<IActivityGet[]> {
+export async function activityGet(): Promise<IActivityGet[] | unknown> {
     try {
         const response =
             await axiosInstance.get<IActivityGet[]>("/activity/find-all");
 
         return response.data;
     } catch (error) {
-        console.error("Erro ao buscar atividades:", error);
-        return [];
+        throw new Error(error instanceof Error ? error.message : String(error));
     }
 }

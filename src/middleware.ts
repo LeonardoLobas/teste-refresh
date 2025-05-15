@@ -1,7 +1,6 @@
-// middleware.ts
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     const accessToken = request.cookies.get("access_token")?.value;
     const refreshToken = request.cookies.get("refresh_token")?.value;
 
@@ -13,7 +12,6 @@ export function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/loginPage", request.url));
     }
 
-    // Se tiver pelo menos um dos dois, permite continuar.
     return NextResponse.next();
 }
 

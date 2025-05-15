@@ -38,6 +38,7 @@ export default function Home() {
 
             if (response) {
                 router.push("/homePage");
+                console.log("entrou");
             }
             console.log(response);
         },

@@ -2,12 +2,25 @@
 import React, { useCallback, useState } from "react";
 import { activityGet, IActivityGet } from "@/request/activityGet";
 
+import { useRouter } from "next/navigation";
+
 const Page = () => {
     const [activities, setActivities] = useState<IActivityGet[]>([]);
-
+    const navigate = useRouter();
     const handleClick = useCallback(async () => {
-        const response = await activityGet();
-        setActivities(response);
+        try {
+            const response = await activityGet();
+
+            console.log("response", response);
+            setActivities(response as IActivityGet[]);
+        } catch (error: any) {
+            console.log(error);
+            if (error.message === "REFRESH_ERROR") {
+                navigate.push("/loginPage");
+            }
+
+            throw error;
+        }
     }, []);
 
     return (
