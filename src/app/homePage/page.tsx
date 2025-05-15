@@ -21,7 +21,7 @@ const Page = () => {
 
             throw error;
         }
-    }, []);
+    }, [navigate]);
 
     return (
         <div className="w-full h-screen flex flex-col justify-center items-center">
