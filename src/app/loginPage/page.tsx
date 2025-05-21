@@ -28,7 +28,6 @@ export default function Home() {
 
     const handleLogin = useCallback(
         async (data: createLoginFormData) => {
-            console.log("Entrou no kevin", data);
             const response = await postLoginForm(data);
 
             if (response instanceof Error) {
